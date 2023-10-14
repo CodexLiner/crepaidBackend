@@ -7,7 +7,8 @@ const otps = require("../models/otps");
 const mUser = require("../models/User");
 const axios = require("axios");
 const { response } = require("express");
-
+const token_aa =
+  "ffc52dcb17afedeb96226be0719b3b40b2f68ea4b605e7206e396c4044b8dd71";
 // home route for login
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.post("/verify", async (req, res) => {
   // send otp to number
   const mOtp = generateOTP();
   const user = { mobile: req.body.mobile, mOtp: otp };
-  const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "60m" });
+  const token = jwt.sign(user, token_aa, { expiresIn: "60m" });
   if (otps.findById(req.body.mobile)) {
     await otps.deleteOne({ _id: req.body.mobile });
   }
@@ -33,23 +34,20 @@ router.post("/verify", async (req, res) => {
     console.log(e);
   }
 });
-function otpSender(mobile, otp) {
-  var sendUrl = "https://api.textlocal.in/send/?";
-  var api = process.env.TEXTTOLOCALKEY;
-  var message = encodeURIComponent(
-    `${otp} is your OTP code PLEASE DO NOT SHARE WITH ANYONE From Gopal Meena`
-  );
-  var senderName = "GOPLME";
-  var stringMessage = `${sendUrl}apikey=${api}&numbers=${91}${mobile}&message=${message}&sender=${senderName}`;
+async function otpSender(mobile, otp) {
+  const API_URL = 'https://api.textlocal.in/send/?'
+  const HEADER = 'GLMEEN'
+  const OTP_TEMPLATE = 'is your OTP code PLEASE DO NOT SHARE WITH ANYONE From Gopal Meena'
   // console.log(stringMessage);
-  axios
-    .get(stringMessage)
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  try {
+    const message = encodeURIComponent(`${otp} ${OTP_TEMPLATE}`);
+    const apiUrl = `${API_URL}apikey=${'Nzc1OTczNDI3OTMyNDk0MzM4NjE0NDYzNTEzNDM3MzQ='}&numbers=91${mobile}&message=${message}&sender=${HEADER}`;
+    const response = await axios.get(apiUrl);
+    //if otp already exist in database 
+    return response.data
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+  }
 }
 router.post("/validator", async (req, res) => {
   const authHeader = req.headers["authorization"];
@@ -58,14 +56,14 @@ router.post("/validator", async (req, res) => {
   console.log(`the token is ${token}`);
   const userCode = req.body.code;
   if (token == null) res.sendStatus(401);
-  jwt.verify(token, process.env.ACCESS_TOKEN, async (err, user) => {
+  jwt.verify(token, token_aa, async (err, user) => {
     if (err) {
       console.log(`the err is ${err}`);
       res.sendStatus(401);
     } else {
       const getOtp = await otps.findOne({ _id: req.body.mobile });
       if (userCode === getOtp.code) {
-        const token = jwt.sign(req.body.mobile, process.env.ACCESS_TOKEN);
+        const token = jwt.sign(req.body.mobile, token_aa);
         const inUser = await mUser.findOne({ _id: req.body.mobile });
         if (inUser != null && inUser._id === req.body.mobile) {
           console.log("user found");
@@ -126,7 +124,7 @@ function auth(req, res, next) {
   console.log(`the token is ${token}`);
   const userCode = req.body.code;
   if (token == null) res.sendStatus(401);
-  jwt.verify(token, process.env.ACCESS_TOKEN, async (err, user) => {
+  jwt.verify(token, token_aa, async (err, user) => {
     if (err) {
       res.send(401);
     }
