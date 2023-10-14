@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const trans = require("../models/transactions");
+const token_aa = 'ffc52dcb17afedeb96226be0719b3b40b2f68ea4b605e7206e396c4044b8dd71'
+
 router.post("/", auth, async (req, res) => {
   console.log("ayayayaya");
   const newTrans = new trans({
@@ -34,7 +36,7 @@ function auth(req, res, next) {
   console.log(`the token is ${token}`);
   const userCode = req.body.code;
   if (token == null) res.sendStatus(401);
-  jwt.verify(token, process.env.ACCESS_TOKEN, async (err, user) => {
+  jwt.verify(token, token_aa, async (err, user) => {
     if (err) {
       res.send(401);
     }
