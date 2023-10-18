@@ -14,6 +14,7 @@ router.get("/getUser", auth, user.getUser)
 
 // card controller
 const card = require('../controllers/cardController')
+router.post('/addCard', auth ,  card.addCard)
 
 // bank controller
 const bank = require('../controllers/bankController')
