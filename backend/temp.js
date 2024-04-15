@@ -4,7 +4,7 @@ const api = async ()=>{
     const options = {
       method: 'POST',
       url: 'api.freebinchecker.com/bin/52000820',
-      params: {bin: '519279'},
+      params: {bin: '653029'},
       headers: {
         'content-type': 'application/json',
         'X-RapidAPI-Key': '4307cec6f4msh5a9c02e2a22be6fp1ec5c4jsna2e1eebfd358',

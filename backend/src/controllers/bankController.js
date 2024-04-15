@@ -15,7 +15,7 @@ exports.addBank = async (req, res) => {
     };
     const result = await bankSchema.insertBankAccount(bankAccountData);
     if (result != null) {
-      res.status(200).json({ status: "success", result });
+      res.status(200).json({ status: "success", accounts: bankAccountData });
     } else {
       res
         .status(500)
@@ -46,20 +46,16 @@ exports.getBank = async (req, res) => {
         }));
         res.status(200).json({ status: "success", accounts: decodedResponse });
       } else {
-        res
-          .status(404)
-          .json({
-            status: "not found",
-            message: "No bank accounts found for the user",
-          });
+        res.status(404).json({
+          status: "not found",
+          message: "No bank accounts found for the user",
+        });
       }
     } else {
-      res
-        .status(400)
-        .json({
-          status: "bad request",
-          message: "Missing 'user' query parameter",
-        });
+      res.status(400).json({
+        status: "bad request",
+        message: "Missing 'user' query parameter",
+      });
     }
   } catch (error) {
     console.error(error);
